@@ -11,6 +11,8 @@ kaboom({
   const JUMP_FORCE = 360 
   const BIG_JUMP_FORCE = 550
   let CURRENT_JUMP_FORCE = JUMP_FORCE
+  let IsJumping= true
+  const FALL_DEATH = 400 
 //   the objects 
   loadRoot('https://i.imgur.com/')
   loadSprite('coin', 'wbKxhcd.png')
@@ -75,7 +77,7 @@ const levelCfg = {
   const gameLevel = addLevel(map, levelCfg);
 
   const scoreLabel = add ([
-      text('score'),
+      text(''),
       pos(30, 6), 
       layer('ui'), 
       {
@@ -156,6 +158,30 @@ const levelCfg = {
     // scoreLabel.text = scoreLabel.value
 
   })
+  const ENEMY_SPEED= 20
+  action('dangerous',(d) => {
+    d.move(-ENEMY_SPEED,0)
+  })
+
+  player.collides('dangerous',(d)=> {
+    if (IsJumping){
+      destroy(d)
+    }
+    else{
+      go('lose')
+    }
+    
+  })
+
+  player.action(() => {
+    // it is used to make the cam move with the player 
+    camPos(player.pos)
+    if (player.pos.y >= FALL_DEATH){
+      go('lose')
+
+    }
+
+  })
 // keys to controol the game 
   keyDown ('left', () => {
       player.move (-MOVE_SPEED,0)
@@ -164,13 +190,22 @@ const levelCfg = {
   keyDown ('right', () => {
     player.move (MOVE_SPEED,0)
 })
+
+  player.action(() => {
+    if (player.grounded()){
+      IsJumping= false
+    }
+  } )
   keyPress ('space', ()=> {
-      if (player.grounded){
+      if (player.grounded()){
+          IsJumping=true 
           player.jump(CURRENT_JUMP_FORCE)
       }
   })
 
-
+scene('lose',()=>{
+  add([text('you lost'), origin('center'), pos(width()/2, height()/2)])
+})
 
 })
 
