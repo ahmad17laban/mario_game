@@ -215,7 +215,6 @@ scene("game", ({ level, score }) => {
 
   keyDown('right', () => {
     player.move(MOVE_SPEED, 0)
-    player.action()
 
   })
 
